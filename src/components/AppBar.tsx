@@ -16,6 +16,7 @@ const AppBar = () => {
           <span className="text-xl font-bold tracking-tight text-foreground">
             PDF{" "}
             <span className="text-accent">Lab</span>
+            <span className="ml-2 text-xs font-normal text-foreground-muted">by Hanz</span>
           </span>
         </div>
 
