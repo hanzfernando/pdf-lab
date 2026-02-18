@@ -1,28 +1,68 @@
+"use client";
+
 /**
- * Home page – a simple landing / dashboard placeholder for PDF Lab.
- * Uses CSS custom properties from globals.css so it automatically adapts
- * to light and dark mode without any extra JS.
+ * Home / Dashboard page
+ *
+ * Composes all PDF Lab features:
+ *  1. UploadZone       – drag-and-drop or click to add PDFs
+ *  2. FileList         – sortable list of uploaded files (sets merge order)
+ *  3. PageEditor       – modal to rearrange / remove pages per file
+ *  4. MergeToolbar     – sticky bottom bar with the Merge & Download button
+ *
+ * State lives in usePdfStore and flows down as props.
+ * PageEditor is shown only when the user clicks the LayoutGrid icon on a card.
  */
+
+import { useState } from "react";
+import { usePdfStore } from "@/hooks/usePdfStore";
+import UploadZone from "@/components/pdf/UploadZone";
+import FileList from "@/components/pdf/FileList";
+import PageEditor from "@/components/pdf/PageEditor";
+import MergeToolbar from "@/components/pdf/MergeToolbar";
+
 export default function Home() {
+  const store = usePdfStore();
+
+  // ID of the file whose PageEditor is currently open (null = closed)
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
+
+  const editingFile = store.files.find((f) => f.id === editingFileId) ?? null;
+
   return (
-    <section className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
-      <h1 className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>
-        Welcome to{" "}
-        <span style={{ color: "var(--accent)" }}>PDF Lab</span>
-      </h1>
-      <p className="text-lg max-w-md" style={{ color: "var(--foreground-muted)" }}>
-        Upload, manage, and work with your PDF files — all in one place.
-      </p>
-      <button
-        className="mt-4 px-6 py-3 rounded-lg font-semibold transition-colors duration-200 cursor-pointer"
-        style={{
-          backgroundColor: "var(--accent)",
-          color: "#ffffff",
-        }}
+    <>
+      {/* ── Main content ──────────────────────────────────────────────── */}
+      <div
+        className="flex flex-col gap-6 pb-24"
+        /* pb-24 leaves room above the sticky MergeToolbar */
       >
-        Get Started
-      </button>
-    </section>
+        {/* Upload area */}
+        <UploadZone onUpload={store.addFiles} isLoading={store.isLoading} />
+
+        {/* File list (only shown after at least one upload) */}
+        {store.files.length > 0 && (
+          <FileList
+            files={store.files}
+            onMove={store.moveFile}
+            onRemove={store.removeFile}
+            onEditPages={(id) => setEditingFileId(id)}
+          />
+        )}
+      </div>
+
+      {/* ── Merge toolbar ─────────────────────────────────────────────── */}
+      <MergeToolbar files={store.files} onReset={store.resetAll} />
+
+      {/* ── Page editor modal ─────────────────────────────────────────── */}
+      {editingFile && (
+        <PageEditor
+          file={editingFile}
+          onMovePage={store.movePage}
+          onRemovePage={store.removePage}
+          onClose={() => setEditingFileId(null)}
+        />
+      )}
+    </>
   );
 }
+
 
