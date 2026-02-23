@@ -94,7 +94,11 @@ export default function FileList({
   onEditPages,
 }: FileListProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      // Require an 8px drag before activating so accidental taps on mobile
+      // don't trigger a reorder.
+      activationConstraint: { distance: 8 },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })

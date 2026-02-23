@@ -92,7 +92,11 @@ export default function PageEditor({
   onClose,
 }: PageEditorProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      // Require an 8px drag before activating so taps on the remove button
+      // are not misinterpreted as drag gestures on mobile.
+      activationConstraint: { distance: 8 },
+    }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -109,14 +113,14 @@ export default function PageEditor({
   return (
     // Backdrop
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 backdrop-blur-sm overflow-y-auto py-8 px-4"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 backdrop-blur-sm overflow-y-auto py-4 px-2 sm:py-8 sm:px-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       {/* Panel */}
-      <div className="w-full max-w-5xl bg-background rounded-2xl shadow-2xl border border-border flex flex-col">
+      <div className="w-full max-w-5xl bg-background rounded-2xl shadow-2xl border border-border flex flex-col max-h-[85dvh] my-auto">
 
         {/* ── Header ──────────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-border shrink-0">
           <div>
             <h2 className="text-base font-semibold text-foreground truncate max-w-sm" title={file.name}>
               {file.name}
@@ -148,7 +152,7 @@ export default function PageEditor({
         </div>
 
         {/* ── Page grid ───────────────────────────────────────────────── */}
-        <div className="p-6 overflow-y-auto">
+        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto">
           {file.pages.length === 0 ? (
             <p className="text-center text-foreground-muted py-20 text-sm">
               All pages removed. Close this editor and remove the file, or re-upload it.
@@ -179,7 +183,7 @@ export default function PageEditor({
         </div>
 
         {/* ── Footer ──────────────────────────────────────────────────── */}
-        <div className="px-6 py-4 border-t border-border flex justify-end">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-border flex justify-end shrink-0">
           <button
             onClick={onClose}
             className="px-5 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors cursor-pointer"
