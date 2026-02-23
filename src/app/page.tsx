@@ -78,8 +78,8 @@ export default function Home() {
           </h1>
 
           <p className="text-sm md:text-base text-foreground-muted max-w-sm">
-            Combine multiple PDFs, reorder pages and download your finished
-            document in seconds — no install needed.
+            Combine multiple PDFs, reorder pages and download in seconds —
+            no account, no install, nothing uploaded to a server.
           </p>
         </section>
 
@@ -103,12 +103,21 @@ export default function Home() {
 
         {/* ── Hidden SEO copy: visible to crawlers & screen readers only ── */}
         <section className="sr-only">
-          <h2>Merge and edit PDF files online with PDF Lab</h2>
+          <h2>Merge PDF files without uploading to a server — free &amp; private</h2>
           <p>
-            PDF Lab is a simple online PDF tool that lets you merge multiple
-            PDF files, split long documents, and reorder or delete individual
-            pages directly in your browser without installing extra software.
+            PDF Lab is a free browser-based PDF merger that works entirely on
+            your device. Combine PDF files, reorder or delete individual pages,
+            and download the result — no account, no sign-up, no file upload to
+            any server required. It is the fastest way to merge PDFs online
+            without registration.
           </p>
+          <ul>
+            <li>Merge PDF files without uploading to a server</li>
+            <li>Combine PDFs in browser without an account</li>
+            <li>Free PDF merger — no sign-up required</li>
+            <li>Reorder and delete PDF pages online for free</li>
+            <li>Browser-based PDF editor, no install needed</li>
+          </ul>
         </section>
 
       </div>
