@@ -48,21 +48,12 @@ export const metadata: Metadata = {
     siteName: "PDF Lab",
     type: "website",
     url: siteUrl,
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "PDF Lab – Free Online PDF Merger & Editor",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "PDF Lab – Free Online PDF Merger, No Sign-up",
     description:
       "Merge, split and reorder PDF pages in your browser — no account or install needed.",
-    images: ["/og-image.png"],
   },
 };
 
