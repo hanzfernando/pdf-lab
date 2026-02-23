@@ -68,11 +68,14 @@ export default function UploadZone({ onUpload, isLoading = false }: UploadZonePr
       ].join(" ")}
     >
       {/* Hidden native file input */}
+      {/* accept must include BOTH the MIME type AND the .pdf extension.
+          Mobile browsers (Android/iOS) rely on the extension to show the
+          general file manager instead of the camera / media picker. */}
       <input
         ref={inputRef}
         type="file"
         multiple
-        accept="application/pdf"
+        accept=".pdf,application/pdf"
         className="hidden"
         onChange={handleFileChange}
       />

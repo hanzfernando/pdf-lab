@@ -42,15 +42,34 @@ export default function PageThumbnail({
     setIsRendering(true);
     setError(false);
 
+    // Keep a reference so we can destroy the loading task on cleanup,
+    // which is critical on low-memory mobile devices.
+    let loadingTask: import("pdfjs-dist/types/src/display/api").PDFDocumentLoadingTask | null = null;
+
     (async () => {
       try {
         // ── Lazy import — runs only on the client, never during SSR ──
         const pdfjsLib = await import("pdfjs-dist");
 
-        // Point the worker at the local file we copied to /public
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+        // Use an absolute URL so the worker resolves correctly across all
+        // mobile browsers (Safari, Chrome for iOS, WebView, etc.).
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+          "/pdf.worker.min.mjs",
+          window.location.href
+        ).toString();
 
-        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer.slice(0) });
+        // Guard: a detached ArrayBuffer has byteLength === 0. This can happen
+        // if a previous render already transferred the buffer to the worker.
+        if (arrayBuffer.byteLength === 0) {
+          if (!cancelled) { setError(true); setIsRendering(false); }
+          return;
+        }
+
+        // slice(0) creates a true independent copy of the buffer.
+        // pdfjs-dist transfers the data to its worker thread (detaching it),
+        // so we must pass a copy each time to keep the store's original intact
+        // and allow multiple PageThumbnails to read the same file concurrently.
+        loadingTask = pdfjsLib.getDocument({ data: arrayBuffer.slice(0) });
         const pdf = await loadingTask.promise;
         if (cancelled) return;
 
@@ -71,6 +90,8 @@ export default function PageThumbnail({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
+        // pdfjs-dist v5 requires `canvas` in RenderParameters alongside
+        // `canvasContext`. Pass the same canvas element the context belongs to.
         await page.render({ canvasContext: ctx, viewport: scaledViewport, canvas }).promise;
 
         if (!cancelled) setIsRendering(false);
@@ -85,6 +106,8 @@ export default function PageThumbnail({
 
     return () => {
       cancelled = true;
+      // Destroy the loading task to free memory on mobile.
+      loadingTask?.destroy().catch(() => {});
     };
   }, [arrayBuffer, pageIndex]);
 
@@ -98,14 +121,15 @@ export default function PageThumbnail({
       ].join(" ")}
       style={{ width: THUMBNAIL_WIDTH + 2 }}
     >
-      {/* Drag handle overlay */}
+      {/* Drag handle overlay — touch-none prevents the browser from treating
+          the drag as a scroll gesture on mobile. */}
       <div
         {...dragHandleProps}
-        className="absolute inset-0 cursor-grab active:cursor-grabbing z-10"
+        className="absolute inset-0 cursor-grab active:cursor-grabbing z-10 touch-none"
         aria-label="Drag to reorder page"
       />
 
-      {/* Remove button */}
+      {/* Remove button — always visible on touch, hover-only on pointer devices */}
       {onRemove && (
         <button
           onClick={(e) => {
@@ -114,7 +138,7 @@ export default function PageThumbnail({
           }}
           aria-label="Remove page"
           title="Remove page"
-          className="absolute top-1 right-1 z-20 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer"
+          className="absolute top-1 right-1 z-20 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150 cursor-pointer"
         >
           ×
         </button>

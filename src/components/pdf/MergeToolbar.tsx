@@ -51,42 +51,50 @@ export default function MergeToolbar({ files, onReset }: MergeToolbarProps) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-(--appbar-bg) shadow-[0_-2px_8px_0_rgb(0_0_0/0.08)] transition-colors duration-200">
-      <div className="w-full max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="w-full max-w-7xl mx-auto px-4 py-3 flex flex-col gap-2">
 
-        {/* Summary */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+        {/* Row 1 — summary + error */}
+        <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-medium text-foreground">
             {files.length} file{files.length !== 1 ? "s" : ""} &middot; {totalPages} page{totalPages !== 1 ? "s" : ""} total
           </p>
           {error && (
-            <p className="text-xs text-red-500">{error}</p>
+            <p className="text-xs text-red-500 text-right">{error}</p>
           )}
         </div>
 
-        {/* Filename input + actions */}
+        {/* Row 2 — filename input + action buttons */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={onReset}
-            disabled={isMerging}
-            title="Clear all files and start over"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold border border-border text-foreground-muted hover:text-red-500 hover:border-red-400 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Reset
-          </button>
+          {/* Filename input grows to fill available space */}
           <input
             type="text"
             value={filename}
             onChange={(e) => setFilename(e.target.value)}
-            placeholder="filename.pdf"
+            placeholder="Output filename"
             disabled={isMerging}
-            className="w-56 px-3 py-2 rounded-lg text-sm border border-border bg-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
+            className="flex-1 min-w-0 px-3 py-2.5 rounded-lg text-sm border border-border bg-surface text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
             aria-label="Output filename"
           />
+
+          {/* Reset — icon-only on mobile, labelled on sm+ */}
+          <button
+            onClick={onReset}
+            disabled={isMerging}
+            title="Clear all files and start over"
+            className="shrink-0 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-lg text-sm font-semibold border border-border text-foreground-muted hover:text-red-500 hover:border-red-400 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {/* Show label on sm+, hide on mobile to save space */}
+            <span className="hidden sm:inline">Reset</span>
+            {/* Mobile icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+
+          {/* Merge button */}
           <button
             onClick={handleMerge}
             disabled={!canMerge || isMerging}
             className={[
-              "flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer",
+              "shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer",
               canMerge && !isMerging
                 ? "bg-accent text-white hover:bg-accent-hover"
                 : "bg-surface-elevated text-foreground-muted cursor-not-allowed",
@@ -95,12 +103,13 @@ export default function MergeToolbar({ files, onReset }: MergeToolbarProps) {
             {isMerging ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Merging…
+                <span className="hidden sm:inline">Merging…</span>
               </>
             ) : (
               <>
                 <Combine className="w-4 h-4" />
-                Merge &amp; Download
+                <span className="hidden sm:inline">Merge &amp; Download</span>
+                <span className="sm:hidden">Merge</span>
               </>
             )}
           </button>
