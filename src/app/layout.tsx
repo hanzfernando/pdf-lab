@@ -16,8 +16,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PDF Lab",
-  description: "Manage your PDF files online with PDF Lab",
+  title: "PDF Lab – Free Online PDF Merger, Splitter & Editor",
+  description:
+    "Merge, split, reorder and edit PDF pages online for free with PDF Lab. Secure PDF merging, page organizer and PDF tools that run in your browser.",
+  keywords: [
+    "PDF merger",
+    "merge PDF online",
+    "combine PDF files",
+    "reorder PDF pages",
+    "delete PDF pages",
+    "split PDF",
+    "online PDF editor",
+    "free PDF tools",
+    "PDF organizer",
+    "PDF page rearrange",
+  ],
+  openGraph: {
+    title: "PDF Lab – Free Online PDF Merger & Editor",
+    description:
+      "Fast, secure and free online PDF tools. Merge, split and rearrange PDF pages directly in your browser with PDF Lab.",
+    siteName: "PDF Lab",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PDF Lab – Free Online PDF Merger & Editor",
+    description:
+      "Merge, split and organize PDF files online for free with PDF Lab.",
+  },
 };
 
 export default function RootLayout({
